@@ -1,7 +1,7 @@
 import logging
 import os
 import requests
-from .models import Location
+from .models import Architecture, Films, History, Music
 
 
 def logger():
@@ -34,48 +34,74 @@ def get_distance_matrix(origin_lat, origin_lon, destination_locations):
     origin = f"{origin_lat},{origin_lon}"
     
     for dest in destination_locations:
-        if isinstance(dest, Location):
+        # Check if dest is one of our model instances
+        if isinstance(dest, (Architecture, Films, History, Music)):
             destination = f"{dest.latitude},{dest.longitude}"
             location_name = dest.name
             location_id = dest.id
+            location_type = dest.__class__.__name__
         else:
             destination = f"{dest[0]},{dest[1]}"
             location_name = None
             location_id = None
+            location_type = None
         
         try:
-            # Distance Matrix API call
-            params = {
-                'origins': origin,
-                'destinations': destination,
-                'key': api_key,
-                'mode': 'driving'  # Change to 'transit', 'walking', 'bicycling' as needed
-            }
+            # Distance Matrix API call for transit (primary) and walking (secondary)
+            transit_result = None
+            walking_result = None
             
-            response = requests.get(
-                'https://maps.googleapis.com/maps/api/distancematrix/json',
-                params=params,
-                timeout=5
-            )
+            for mode in ['transit', 'walking']:
+                params = {
+                    'origins': origin,
+                    'destinations': destination,
+                    'key': api_key,
+                    'mode': mode
+                }
+                
+                response = requests.get(
+                    'https://maps.googleapis.com/maps/api/distancematrix/json',
+                    params=params,
+                    timeout=5
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data['status'] == 'OK':
+                        element = data['rows'][0]['elements'][0]
+                        if element['status'] == 'OK':
+                            if mode == 'transit' and transit_result is None:
+                                transit_result = (element, 'transit')
+                            elif mode == 'walking' and walking_result is None:
+                                walking_result = (element, 'walking')
             
-            if response.status_code == 200:
-                data = response.json()
-                if data['status'] == 'OK':
-                    element = data['rows'][0]['elements'][0]
-                    if element['status'] == 'OK':
-                        results.append({
-                            'location_id': location_id,
-                            'location_name': location_name,
-                            'distance_km': element['distance']['value'] / 1000,
-                            'distance_text': element['distance']['text'],
-                            'travel_time_min': element['duration']['value'] / 60,
-                            'travel_time_text': element['duration']['text'],
-                            'travel_mode': 'driving'
-                        })
-                    else:
-                        logger().warning(f"Distance Matrix error for destination: {element['status']}")
-                else:
-                    logger().error(f"Distance Matrix API error: {data['status']}")
+            # Prefer transit, fallback to walking
+            if transit_result:
+                element, mode = transit_result
+                results.append({
+                    'location_id': location_id,
+                    'location_name': location_name,
+                    'location_type': location_type,
+                    'distance_km': element['distance']['value'] / 1000,
+                    'distance_text': element['distance']['text'],
+                    'travel_time_min': element['duration']['value'] / 60,
+                    'travel_time_text': element['duration']['text'],
+                    'travel_mode': mode
+                })
+            elif walking_result:
+                element, mode = walking_result
+                results.append({
+                    'location_id': location_id,
+                    'location_name': location_name,
+                    'location_type': location_type,
+                    'distance_km': element['distance']['value'] / 1000,
+                    'distance_text': element['distance']['text'],
+                    'travel_time_min': element['duration']['value'] / 60,
+                    'travel_time_text': element['duration']['text'],
+                    'travel_mode': mode
+                })
+            else:
+                logger().warning(f"No transit or walking route found for {location_name}")
         except Exception as e:
             logger().error(f"Error calling Distance Matrix API: {str(e)}")
     
@@ -164,7 +190,7 @@ def get_best_commute_options(origin_lat, origin_lon, destination_lat, destinatio
     origin = f"{origin_lat},{origin_lon}"
     destination = f"{destination_lat},{destination_lon}"
     
-    commute_modes = ['driving', 'transit', 'walking', 'bicycling']
+    commute_modes = ['transit', 'walking']
     results = {}
     
     for mode in commute_modes:
@@ -210,45 +236,108 @@ def get_best_commute_options(origin_lat, origin_lon, destination_lat, destinatio
     
     return {}
 
-def filter_location_pref(preferences):
+def get_all_locations(location_type=None):
     """
-    Filter locations based on user preferences.
+    Get all locations from all models or filter by specific type.
     
     Args:
-        preferences (dict): User preferences containing:
-            - categories (list): List of preferred categories (e.g., ['architecture', 'history'])
-            - latitude (float, optional): User's latitude for distance filtering
-            - longitude (float, optional): User's longitude for distance filtering
-            - radius_km (float, optional): Search radius in kilometers (default: 5)
+        location_type (str, optional): Filter by location type ('Architecture', 'Films', 'History', 'Music')
+                                      If None, returns all locations
     
     Returns:
-        QuerySet: Filtered Location objects matching user preferences
+        list: Combined list of all location objects
     """
-    queryset = Location.objects.all()
+    locations = []
     
-    # Filter by categories if provided
-    if 'categories' in preferences and preferences['categories']:
-        queryset = queryset.filter(category__in=preferences['categories'])
+    if location_type is None or location_type == 'Architecture':
+        locations.extend(list(Architecture.objects.all()))
+    if location_type is None or location_type == 'Films':
+        locations.extend(list(Films.objects.all()))
+    if location_type is None or location_type == 'History':
+        locations.extend(list(History.objects.all()))
+    if location_type is None or location_type == 'Music':
+        locations.extend(list(Music.objects.all()))
     
-    # Filter by distance if coordinates provided
-    if 'latitude' in preferences and 'longitude' in preferences:
-        from django.db.models import FloatField
-        from django.db.models.functions import ACos, Cos, Radians, Sin
-        
-        user_lat = preferences['latitude']
-        user_lon = preferences['longitude']
-        radius = preferences.get('radius_km', 5)  # default 5km
-        
-        # Haversine formula for distance calculation
-        # Distance = 6371 * ACOS(SIN(lat1) * SIN(lat2) + COS(lat1) * COS(lat2) * COS(lon2 - lon1))
-        # For better performance, use this simplified distance filter
-        queryset = queryset.filter(
-            latitude__gte=user_lat - (radius / 111),  # Rough approximation: 1 degree ≈ 111km
-            latitude__lte=user_lat + (radius / 111),
-            longitude__gte=user_lon - (radius / (111 * 0.85)),  # Adjust for latitude
-            longitude__lte=user_lon + (radius / (111 * 0.85))
-        )
-    
-    logger().info(f"Filtered locations: {queryset.count()} results")
-    return queryset
+    logger().info(f"Retrieved {len(locations)} locations")
+    return locations
 
+def create_history_location(name, latitude, longitude, fact):
+    """
+    Create a new History location.
+    
+    Args:
+        name (str): Name of the location
+        latitude (float): Latitude of the location
+        longitude (float): Longitude of the location
+        fact (str): Interesting fact about the location
+    
+    Returns:
+        History: Created History object
+    """
+    try:
+        history_location = History.objects.create(
+            name=name,
+            latitude=latitude,
+            longitude=longitude,
+            fact=fact
+        )
+        logger().info(f"Created new History location: {name}")
+        return history_location
+    except Exception as e:
+        logger().error(f"Error creating History location: {str(e)}")
+        return None
+    
+def create_music_location(name, latitude, longitude, fact):
+    """
+    Create a new Music location.
+    
+    Args:
+        name (str): Name of the location
+        latitude (float): Latitude of the location
+        longitude (float): Longitude of the location
+        fact (str): Interesting fact about the location
+    
+    Returns:
+        Music: Created Music object
+    """
+    try:
+        music_location = Music.objects.create(
+            name=name,
+            latitude=latitude,
+            longitude=longitude,
+            fact=fact
+        )
+        logger().info(f"Created new Music location: {name}")
+        return music_location
+    except Exception as e:
+        logger().error(f"Error creating Music location: {str(e)}")
+        return None
+    
+def create_films_location(name, latitude, longitude, fact):    
+    try:
+        film_location = Films.objects.create(
+                name=name,
+                latitude=latitude,
+                longitude=longitude,
+                fact=fact
+        )
+        logger().info(f"Created new Film location: {name}")
+        return film_location
+    except Exception as e:
+        logger().error(f"Error creating  location: {str(e)}")
+        return None
+    
+def create_architecture_location(name, latitude, longitude, fact):
+    try:
+        architecture_location = Architecture.objects.create(
+                name=name,
+                latitude=latitude,
+                longitude=longitude,
+                fact=fact
+        )
+        logger().info(f"Created new Architecture location: {name}")
+        return architecture_location
+    except Exception as e:
+        logger().error(f"Error creating  location: {str(e)}")
+        return None
+    
