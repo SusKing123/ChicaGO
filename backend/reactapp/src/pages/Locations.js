@@ -13,6 +13,10 @@ export default function Locations() {
   const intervalRef = React.useRef(null);
   const navigate = useNavigate();
 
+  // how often we refresh the geolocation (milliseconds)
+  const REFRESH_INTERVAL = 5000; 
+
+
   // Real Chicago Loop locations data with coordinates
   const locationsByPreference = {
     films: [
@@ -57,6 +61,8 @@ export default function Locations() {
     // Auto-start tracking when component loads
     const timer = setTimeout(() => {
       getLocationData();
+      // begin periodic updates
+      intervalRef.current = setInterval(getLocationData, REFRESH_INTERVAL);
     }, 100);
     
     return () => {
@@ -169,6 +175,11 @@ export default function Locations() {
               <div style={{ fontSize: 13, color: '#333', marginTop: 4 }}>
                 Lat: {coords.latitude.toFixed(6)}, Lng: {coords.longitude.toFixed(6)}
               </div>
+              {lastUpdated && (
+                <div style={{ fontSize: 12, color: '#555', marginTop: 2 }}>
+                  Last refreshed: {new Date(lastUpdated).toLocaleTimeString()}
+                </div>
+              )}
             </div>
 
             <div style={{ marginTop: 20 }}>
