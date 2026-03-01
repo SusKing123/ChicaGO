@@ -1,11 +1,38 @@
 from django.db import models
 
-class Location(models.Model):
-    name = models.CharField(max_length=255)
-    category = models.CharField(max_length=100)  # e.g., architecture, history
-    description = models.TextField()
+class Architecture(models.Model):
+    name =  models.CharField(max_length=255)
     latitude = models.FloatField()
     longitude = models.FloatField()
+    fact = models.TextField()
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.fact}"
+
+class History(models.Model):
+    name =  models.CharField(max_length=255)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    fact = models.TextField()
+
+
+    def __str__(self):
+        return f"{self.name} - {self.fact}"
+    
+class Music(models.Model):
+    name =  models.CharField(max_length=255)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    fact = models.TextField()
+
+    def __str__(self):
+        return f"{self.name} - {self.fact}"
+    
+class Films(models.Model):
+    name =  models.CharField(max_length=255)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    fact = models.TextField()
+
+    def __str__(self):
+        return f"{self.name} - {self.fact}"
