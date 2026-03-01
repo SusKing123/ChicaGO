@@ -64,7 +64,7 @@ export default function Home() {
     getLocation();
     intervalRef.current = setInterval(() => {
       getLocation();
-    }, 30 * 1000);
+    }, 5 * 1000);
     setIsTracking(true);
     setStatus('tracking');
   }
