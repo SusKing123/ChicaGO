@@ -8,7 +8,9 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^13.5.0",
     "react": "^19.2.4",
+    "react-app-polyfill": "^3.0.0",
     "react-dom": "^19.2.4",
+    "react-router-dom": "^6.30.3",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
@@ -16,7 +18,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "cap:init": "npx cap init \"ChicaGO\" com.example.chicago",
+    "cap:add:ios": "npx cap add ios",
+    "cap:copy": "npx cap copy",
+    "cap:open:ios": "npx cap open ios"
   },
   "eslintConfig": {
     "extends": [
