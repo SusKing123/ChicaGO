@@ -5,7 +5,7 @@ export default function Header() {
   return (
     <header className="app-header">
       <div className="container">
-        <div className="app-title">ChicaGO</div>
+        <div className="app-title">🏙️ ChicaGO</div>
       </div>
     </header>
   );
