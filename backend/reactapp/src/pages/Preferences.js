@@ -10,6 +10,7 @@ export default function Preferences() {
     { id: 'architecture', label: 'Architecture', emoji: '🏛️' },
     { id: 'music', label: 'Music', emoji: '🎵' },
     { id: 'history', label: 'History', emoji: '📚' },
+    { id: 'food', label: 'Food', emoji: '🍽️' },
   ];
 
   return (

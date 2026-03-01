@@ -23,21 +23,50 @@ export default function Locations() {
       { name: 'Cloud Gate (The Bean)', address: '201 E Randolph St', emoji: '🎬', lat: 41.8827, lng: -87.6233 },
       { name: 'Chicago Cultural Center', address: '78 E Washington St', emoji: '🎬', lat: 41.8834, lng: -87.6250 },
       { name: 'The Chicago Theatre', address: '175 N State St', emoji: '🎬', lat: 41.8854, lng: -87.6279 },
+      // additional famous film shoots
+      { name: 'The Dark Knight (truck flip)', address: 'Lower Wacker Drive', emoji: '🎬', lat: 41.8781, lng: -87.6355 },
+      { name: 'Ferris Bueller Parade Route', address: 'Downtown Parade Route', emoji: '🎬', lat: 41.8830, lng: -87.6270 },
+      { name: 'The Blues Brothers Chase', address: 'LaSalle St', emoji: '🎬', lat: 41.8781, lng: -87.6315 },
+      { name: 'Transformers: Dark of the Moon', address: 'Wacker Drive', emoji: '🎬', lat: 41.8781, lng: -87.6355 },
     ],
     architecture: [
       { name: 'Marquette Building', address: '140 S Dearborn St', emoji: '🏛️', lat: 41.8779, lng: -87.6295 },
       { name: 'Chicago Cultural Center', address: '78 E Washington St', emoji: '🏛️', lat: 41.8834, lng: -87.6250 },
       { name: '875 North Michigan Avenue', address: '875 N Michigan Ave', emoji: '🏛️', lat: 41.8960, lng: -87.6244 },
+      // added architecture locations
+      { name: 'Willis Tower', address: '233 S Wacker Dr', emoji: '🏛️', lat: 41.878876, lng: -87.635915 },
+      { name: 'Rookery Building', address: '209 S LaSalle St', emoji: '🏛️', lat: 41.8786, lng: -87.6324 },
+      { name: 'Chicago Board of Trade Building', address: '141 W Jackson Blvd', emoji: '🏛️', lat: 41.8782, lng: -87.6325 },
+      { name: 'Monadnock Building', address: '53 W Jackson Blvd', emoji: '🏛️', lat: 41.8783, lng: -87.6319 },
+      { name: 'Marina City', address: '300 N State St', emoji: '🏛️', lat: 41.8885, lng: -87.6267 },
+      { name: 'Carbide & Carbon Building', address: '230 N Michigan Ave', emoji: '🏛️', lat: 41.8881, lng: -87.6244 },
+      { name: 'Civic Opera House', address: '20 N Wacker Dr', emoji: '🏛️', lat: 41.8851, lng: -87.6360 },
     ],
     music: [
       { name: 'American Music Box Theatre', address: '60 E Van Buren St', emoji: '🎵', lat: 41.8751, lng: -87.6176 },
       { name: 'Grant Park', address: '337 E Randolph St', emoji: '🎵', lat: 41.8829, lng: -87.6176 },
       { name: 'Pritzker Pavilion', address: '201 E Randolph St', emoji: '🎵', lat: 41.8827, lng: -87.6233 },
+      // added live entertainment venues
+      { name: 'Chicago Theatre', address: '175 N State St', emoji: '🎵', lat: 41.8854, lng: -87.6279 },
+      { name: 'Lyric Opera of Chicago', address: '20 N Wacker Dr', emoji: '🎵', lat: 41.8851, lng: -87.6360 },
+      { name: 'Goodman Theatre', address: '170 N Dearborn St', emoji: '🎵', lat: 41.8830, lng: -87.6306 },
+      { name: 'Jay Pritzker Pavilion', address: 'Millennium Park', emoji: '🎵', lat: 41.8826, lng: -87.6226 },
     ],
     history: [
       { name: 'Chicago Cultural Center', address: '78 E Washington St', emoji: '📚', lat: 41.8834, lng: -87.6250 },
       { name: 'The Art Institute of Chicago', address: '111 S Michigan Ave', emoji: '📚', lat: 41.8766, lng: -87.6244 },
       { name: 'Federal Center Plazas', address: '230 S Dearborn St', emoji: '📚', lat: 41.8829, lng: -87.6295 },
+    ],
+    // new category for food locations
+    food: [
+      { name: "Lou Malnati's Pizzeria", address: '439 N Wells St', emoji: '🍽️', lat: 41.8951, lng: -87.6346 },
+      { name: "Giordano's", address: '223 W Jackson Blvd', emoji: '🍽️', lat: 41.8782, lng: -87.6340 },
+      { name: "Portillo's", address: '100 W Ontario St', emoji: '🍽️', lat: 41.8947, lng: -87.6266 },
+      { name: 'The Dearborn', address: '145 N Dearborn St', emoji: '🍽️', lat: 41.8834, lng: -87.6308 },
+      { name: 'Revival Food Hall', address: '125 S Clark St', emoji: '🍽️', lat: 41.8764, lng: -87.6283 },
+      { name: "Cindy's Rooftop", address: '12 S Michigan Ave', emoji: '🍽️', lat: 41.8843, lng: -87.6246 },
+      { name: 'Eleven City Diner', address: '1112 S Wabash Ave', emoji: '🍽️', lat: 41.8573, lng: -87.6261 },
+      { name: "Miller's Pub", address: '134 S Wabash Ave', emoji: '🍽️', lat: 41.8566, lng: -87.6260 },
     ],
   };
 
